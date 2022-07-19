@@ -15,7 +15,7 @@ exports.createSauce = (req, res, next) => {
     });
 
     sauce.save()
-        .then(() => { res.status(201).json({ message: 'Objet enregistré !' }) })
+        .then(() => { res.status(201).json({ message: 'Object saved !' }) })
         .catch(error => { res.status(400).json({ error }) })
 };
 
@@ -50,10 +50,10 @@ exports.modifySauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then((sauce) => {
             if (sauce.userId != req.auth.userId) {
-                res.status(401).json({ message: 'Not authorized' });
+                res.status(403).json({ message: 'unauthorized request' });
             } else {
                 Sauce.updateOne({ _id: req.params.id }, {...sauceObject, _id: req.params.id })
-                    .then(() => res.status(200).json({ message: 'Objet modifié!' }))
+                    .then(() => res.status(200).json({ message: 'Object modified!' }))
                     .catch(error => res.status(401).json({ error }));
             }
         })
@@ -68,12 +68,12 @@ exports.deleteSauce = (req, res, next) => {
     Sauce.findOne({ _id: req.params.id })
         .then(sauce => {
             if (sauce.userId != req.auth.userId) {
-                res.status(401).json({ message: 'Not authorized' });
+                res.status(403).json({ message: ' unauthorized request' });
             } else {
                 const filename = sauce.imageUrl.split('/images/')[1];
                 fs.unlink(`images/${filename}`, () => {
                     Sauce.deleteOne({ _id: req.params.id })
-                        .then(() => { res.status(200).json({ message: 'Objet supprimé !' }) })
+                        .then(() => { res.status(200).json({ message: 'Object deleted !' }) })
                         .catch(error => res.status(401).json({ error }));
                 });
             }
@@ -98,47 +98,13 @@ exports.getAllSauces = (req, res, next) => {
 };
 
 
-exports.addLikes = (req, res, next) => {
+/*exports.addLikes = (req, res, next) => {
 
 
     Sauce.findOne({ _id: req.params.id })
         .then((sauce) => {
 
 
-
-            /*let likes = sauce.likes;
-            let dislikes = sauce.dislikes;
-            let usersLiked = sauce.usersLiked;
-            let usersDisliked = sauce.usersDisliked;
-            console.log('userIdptre' + req.body.userId);
-            console.log('like req = ' + req.body.like);
-            console.log("likes : " + likes);
-            console.log("dislikes : " + dislikes);
-            console.log("usersLiked : " + usersLiked);
-            console.log("usersDisliked : " + usersDisliked);
-
-            let userLikeChoice = req.body.like;
-            let add = addOneLikes(likes, dislikes, usersLiked, usersDisliked, sauce.userId);
-            console.log(add);
-            let rem = removeOneLikes(likes, dislikes, usersLiked, usersDisliked, sauce.userId);
-            console.log(rem);
-            let addDis = addOneDislikes(likes, dislikes, usersLiked, usersDisliked, sauce.userId);
-            console.log(addDis);
-            let remDis = removeOneDislikes(likes, dislikes, usersLiked, usersDisliked, sauce.userId);
-            console.log(remDis);
-            let SWD = switchToDislikes(likes, dislikes, usersLiked, usersDisliked, sauce.userId);
-            console.log(SWD);
-            let SWL = switchToLikes(likes, dislikes, usersLiked, usersDisliked, sauce.userId);
-            console.log(SWL);
-
-            usersLiked = ["333", "444"]
-            let essaie2 = usersLiked.filter(item => item !== sauce.userId);
-            console.log(essaie2);
-
-
-
-            const adjustLikesResult = adjustLikes(userLikeChoice, likes, dislikes, usersLiked, usersDisliked, sauce.userId)
-            console.log(adjustLikesResult);*/
 
             let likes = sauce.likes;
             let dislikes = sauce.dislikes;
@@ -148,15 +114,13 @@ exports.addLikes = (req, res, next) => {
             console.log("req.auth.userId///" + req.auth.userId);
             console.log("sauce.userId///" + sauce.userId);
 
-            /*console.log(sauce);
-            console.log("alors 1?   " + usersLiked.includes(sauce.userId));*/
+           
             const adjustLikesResult = adjustLikes(userLikeChoice, likes, dislikes, usersLiked, usersDisliked, req.auth.userId);
             console.log(userLikeChoice);
-            /*console.log(sauce);
-            console.log("alors 2?   " + usersLiked.includes(sauce.userId));*/
+            
 
             Sauce.updateOne({ _id: req.params.id }, {
-                //_id: req.params.id,
+       
                 userId: sauce.userId,
                 name: sauce.name,
                 manufacturer: sauce.description,
@@ -172,8 +136,40 @@ exports.addLikes = (req, res, next) => {
 
             })
 
-            .then(() => res.status(200).json({ message: 'Objet modifié!' }))
+            .then(() => res.status(200).json({ message: 'Object modified!' }))
                 .catch(error => res.status(401).json({ error }));
+
+        })
+        .catch((error) => {
+
+
+            res.status(400).json({ error });
+            console.log(error);
+
+        });
+};*/
+
+
+exports.addLikes = (req, res, next) => {
+
+
+    Sauce.findOne({ _id: req.params.id })
+        .then((sauce) => {
+
+            let userLikeChoice = req.body.like;
+            console.log("req.auth.userId///" + req.auth.userId);
+            console.log("sauce.userId///" + sauce.userId);
+
+            console.log("sauce//" + sauce);
+            adjustLikes(sauce, userLikeChoice, req.auth.userId);
+            console.log(userLikeChoice);
+
+            console.log("sauce//" + sauce)
+            sauce.save()
+                .then(() => { res.status(201).json({ message: 'Object saved !' }) })
+                .catch(error => { res.status(400).json({ error }) })
+
+
 
         })
         .catch((error) => {
@@ -185,26 +181,8 @@ exports.addLikes = (req, res, next) => {
         });
 };
 
+
 /*const adjustLikes = (userLikeChoice, likes, dislikes, usersLiked, usersDisliked, sauceId) => {
-    let adjustedLikes; 
-    if (!usersLiked.includes(sauceId) && !usersDisliked.includes(sauceId)) {
-        if (userLikeChoice === 1) {
-            adjustedLikes = addOneLikes(likes, dislikes, usersLiked, usersDisliked, sauceId);
-        } else if (userLikeChoice === -1) {
-            adjustedLikes = addOneDislikes(likes, dislikes, usersLiked, usersDisliked, sauceId);
-        }
-    }
-
-
-
-  else if ()
-
-
-
-
-}*/
-
-const adjustLikes = (userLikeChoice, likes, dislikes, usersLiked, usersDisliked, sauceId) => {
     /////////////Likes
     let adjustedLikes = new Object();
     if (usersLiked.includes(sauceId)) {
@@ -235,60 +213,66 @@ const adjustLikes = (userLikeChoice, likes, dislikes, usersLiked, usersDisliked,
         }
     }
     return adjustedLikes;
+}*/
+
+const adjustLikes = (sauce, userLikeChoice, sauceId) => {
+    console.log("On entre dans F1");
+    if (userLikeChoice === 0) {
+
+        if (sauce.usersDisliked.includes(sauceId)) {
+            removeOneDislikes(sauce, sauceId);
+            console.log("On entre dans F2");
+        } else if (sauce.usersLiked.includes(sauceId)) {
+
+            removeOneLikes(sauce, sauceId);
+            console.log("On entre dans F3");
+        }
+
+    } else if (userLikeChoice === 1) {
+        console.log("On entre dans F4");
+        addOneLikes(sauce, sauceId);
+    } else if (userLikeChoice === -1) {
+        console.log("On entre dans F5");
+        addOneDislikes(sauce, sauceId);
+    }
+
 }
 
-const addOneLikes = (likes, dislikes, usersLiked, usersDisliked, sauceId) => {
-    likes = likes + 1;
-    usersLiked.push(sauceId);
+
+
+
+const addOneLikes = (sauce, sauceId) => {
+    sauce.likes++;
+    sauce.usersLiked.push(sauceId);
     console.log("addOneLikes");
     console.log(sauceId + "//" + usersLiked);
-    return {
-        likes,
-        dislikes,
-        usersLiked,
-        usersDisliked
-    };
+
 }
 
-const removeOneLikes = (likes, dislikes, usersLiked, usersDisliked, sauceId) => {
-    likes = likes - 1;
-    usersLiked = usersLiked.filter(item => item !== sauceId);
+const removeOneLikes = (sauce, sauceId) => {
+    sauce.likes--;
+    sauce.usersLiked = sauce.usersLiked.filter(item => item !== sauceId);
     console.log("removeOneLikes");
     console.log(sauceId + "//" + usersLiked);
-    return {
-        likes,
-        dislikes,
-        usersLiked,
-        usersDisliked
-    };
+
 }
 
-const addOneDislikes = (likes, dislikes, usersLiked, usersDisliked, sauceId) => {
-    dislikes = dislikes + 1;
-    usersDisliked.push(sauceId);
+const addOneDislikes = (sauce, sauceId) => {
+    sauce.dislikes++;
+    sauce.usersDisliked.push(sauceId);
     console.log("addOneDislikes");
     console.log(sauceId + "//" + usersDisliked);
-    return {
-        likes,
-        dislikes,
-        usersLiked,
-        usersDisliked
-    };
+
 }
-const removeOneDislikes = (likes, dislikes, usersLiked, usersDisliked, sauceId) => {
-    dislikes = dislikes - 1;
-    usersDisliked = usersDisliked.filter(item => item !== sauceId);
+const removeOneDislikes = (sauce, sauceId) => {
+    sauce.dislikes--;
+    sauce.usersDisliked = sauce.usersDisliked.filter(item => item !== sauceId);
     console.log("removeOneDislikes");
     console.log(sauceId + "//" + usersDisliked);
-    return {
-        likes,
-        dislikes,
-        usersLiked,
-        usersDisliked
-    };
+
 }
 
-const switchToLikes = (likes, dislikes, usersLiked, usersDisliked, sauceId) => {
+/*const switchToLikes = (likes, dislikes, usersLiked, usersDisliked, sauceId) => {
     likes = likes + 1;
     dislikes = dislikes - 1;
     usersLiked.push(sauceId);
@@ -314,4 +298,4 @@ const switchToDislikes = (likes, dislikes, usersLiked, usersDisliked, sauceId) =
         usersLiked,
         usersDisliked
     };
-}
+}*/
