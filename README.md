@@ -3,8 +3,8 @@
 ## Développement d'une application d’évaluation des sauces piquantes. Les utilisateurs peuvent ajouter leurs sauces préférées et liker ou disliker les sauces ajoutées par les autres utilisateurs.
 
 ## Objectifs et Compétences évaluées
-Le frontend de l'application est déja fourni. 
-L'objectif est de créer le backend de l'application
+Le frontend de l'application est déja fourni.   
+L'objectif est de créer le backend de l'application.
 
 Utilisation de Node Js, Express  et Mongo DB.
 
