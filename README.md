@@ -6,10 +6,12 @@
 Le frontend de l'application est déja fourni. 
 L'objectif est de créer le backend de l'application
 
-Mettre en œuvre des opérations CRUD de manière sécurisée
-Stocker des données de manière sécurisée
-API REST
-Sécurité OWASP et RGPD
+Utilisation de Node Js, Express  et Mongo DB.
+
+Mettre en œuvre des opérations CRUD de manière sécurisée  
+Stocker des données de manière sécurisée  
+API REST  
+Sécurité OWASP et RGPD  
 
 ## Installation
 Cloner le projet.
